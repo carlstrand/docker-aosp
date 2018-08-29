@@ -3,7 +3,20 @@
 #
 FROM ubuntu:16.04
 
-MAINTAINER Kyle Manna <kyle@kylemanna.com>
+MAINTAINER Alexander Diewald <diewi@diewald-net.com>
+
+
+#===============================================#
+# CONFIG SECTION                                #
+#===============================================#
+
+# User that will be created within the docker container.
+# Defaults to the user running the script, but can be overridden.
+# UID must be aligned with the owner of the aosp tree.
+ARG uid=$(id -u)
+ARG uname=$(id -un)
+
+#===============================================#
 
 # /bin/sh points to Dash by default, reconfigure to use bash until Android
 # build becomes POSIX compliant
@@ -20,23 +33,22 @@ RUN apt-get update && \
         pngcrush schedtool xsltproc zip zlib1g-dev graphviz && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ADD https://commondatastorage.googleapis.com/git-repo-downloads/repo /usr/local/bin/
-RUN chmod 755 /usr/local/bin/*
-
-# Install latest version of JDK
 # See http://source.android.com/source/initializing.html#setting-up-a-linux-build-environment
-WORKDIR /tmp
+ADD https://commondatastorage.googleapis.com/git-repo-downloads/repo /usr/local/bin/
+RUN chmod +x /usr/local/bin/repo
 
-# All builds will be done by user aosp
-COPY gitconfig /root/.gitconfig
-COPY ssh_config /root/.ssh/config
+# All builds will be done the following user. UID and username have to be provided
+# in the config section
+RUN id ${uname} 2>/dev/null || useradd --uid ${uid} --create-home --shell /bin/bash ${uname}
+
 
 # The persistent data will be in these two directories, everything else is
 # considered to be ephemeral
-VOLUME ["/tmp/ccache", "/aosp"]
+VOLUME ["/mnt/android"]
 
 # Work in the build directory, repo is expected to be init'd here
-WORKDIR /aosp
+WORKDIR /mnt/android
 
-COPY utils/docker_entrypoint.sh /root/docker_entrypoint.sh
-ENTRYPOINT ["/root/docker_entrypoint.sh"]
+# Copies the actual build script inside the container.
+COPY buildaosp.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/buildaosp.sh
