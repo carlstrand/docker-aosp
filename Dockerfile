@@ -13,8 +13,8 @@ MAINTAINER Alexander Diewald <diewi@diewald-net.com>
 # User that will be created within the docker container.
 # Defaults to the user running the script, but can be overridden.
 # UID must be aligned with the owner of the aosp tree.
-ARG uid=$(id -u)
-ARG uname=$(id -un)
+ARG uid=${UID}
+ARG uname=${UNAME}
 
 #===============================================#
 
