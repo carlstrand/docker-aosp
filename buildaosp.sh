@@ -32,12 +32,12 @@ export OUT_DEVICE="${FULL_DIR}/out/target/product/${DEVICE_NAME}"
 # Enable ccache; The directory will be named "ccache/[device]" in the mounted
 # android volume.
 export USE_CCACHE=1
-prebuilts/misc/linux-x86/ccache/ccache -M 50G
+${FULL_DIR}/prebuilts/misc/linux-x86/ccache/ccache -M 50G
 export CCACHE_DIR=/mnt/android/ccache/${DEVICE_NAME}
 
 # Generate a compile_commands.json file to aid code navigation.
 export SOONG_GEN_COMPDB=1
-export SOONG_LINK_COMPDB_TO=$ANDROID_BUILD_TOP
+export SOONG_LINK_COMPDB_TO=${FULL_DIR}
 
 # Number of threads to use for building. Default: #(logical cores) - 1
 export THREAD_NUM=$(($(nproc) - 1))
