@@ -13,8 +13,8 @@ MAINTAINER Alexander Diewald <diewi@diewald-net.com>
 # User that will be created within the docker container.
 # Defaults to the user running the script, but can be overridden.
 # UID must be aligned with the owner of the aosp tree.
-ARG uid=${UID}
-ARG uname=${UNAME}
+ARG UID=1000
+ARG UNAME=aospuser
 
 #===============================================#
 
@@ -37,9 +37,13 @@ RUN apt-get update && \
 ADD https://commondatastorage.googleapis.com/git-repo-downloads/repo /usr/local/bin/
 RUN chmod +x /usr/local/bin/repo
 
+# Copies the actual build script inside the container.
+COPY buildaosp.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/buildaosp.sh
+
 # All builds will be done the following user. UID and username have to be provided
 # in the config section
-RUN id ${uname} 2>/dev/null || useradd --uid ${uid} --create-home --shell /bin/bash ${uname}
+RUN id ${UNAME} 2>/dev/null || useradd --uid ${UID} --create-home --shell /bin/bash ${UNAME}
 
 
 # The persistent data will be in these two directories, everything else is
@@ -48,7 +52,5 @@ VOLUME ["/mnt/android"]
 
 # Work in the build directory, repo is expected to be init'd here
 WORKDIR /mnt/android
-
-# Copies the actual build script inside the container.
-COPY buildaosp.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/buildaosp.sh
+USER ${UNAME}
+CMD "/bin/bash"
