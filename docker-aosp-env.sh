@@ -30,6 +30,9 @@ alias adevenv='cd ${FULL_DIR} && source ./build/envsetup.sh && source ./venv/bin
 # Android build command.
 alias abuild='docker-compose -f ${DCOMP_FILE} run --rm aosp buildaosp.sh'
 
+# Launch a bash shell in the build container
+alias abash='docker-compose -f ${DCOMP_FILE} run --rm aosp /bin/bash'
+
 rateup () {
     ssh -p 29418 ${UNAME_GERRIT}@${SRV_GERRIT} gerrit review --verified +1 --code-review +2 --project "$1" $(git rev-list "$2"..HEAD)
 }
