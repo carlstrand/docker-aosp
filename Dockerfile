@@ -42,9 +42,10 @@ COPY buildaosp.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/buildaosp.sh
 
 # All builds will be done the following user. UID and username have to be provided
-# in the config section
+# in the config section.
+# This user also has sudo permissions in the container.
 RUN id ${UNAME} 2>/dev/null || useradd --uid ${UID} --create-home --shell /bin/bash ${UNAME}
-
+RUN echo "${UNAME} ALL=(ALL) NOPASSWD: ALL" | tee -a /etc/sudoers
 
 # The persistent data will be in these two directories, everything else is
 # considered to be ephemeral
