@@ -5,7 +5,7 @@
 #=================================#
 
 # Directory of the AOSP TREE
-export BASE_DIR=omni
+export BASE_DIR=descendant
 export FULL_DIR=/mnt/android/${BASE_DIR}
 
 # Directory & Compose file of the docker repo
